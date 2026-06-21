@@ -291,6 +291,30 @@
         </div>
     </div>
 
+    <!-- Modal Admin Password Popup -->
+    <div class="modal hidden" id="admin-login-modal">
+        <div class="modal-content card">
+            <i class="fa-solid fa-lock modal-check-icon" style="color: var(--gold);"></i>
+            <h2>تسجيل دخول المسؤول</h2>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">الرجاء إدخال كلمة المرور للوصول إلى لوحة التحكم</p>
+            
+            <div class="form-group" style="width: 100%; text-align: right; position: relative;">
+                <label for="admin-password">كلمة المرور <span class="required">*</span></label>
+                <div class="input-wrapper" style="position: relative;">
+                    <i class="fa-solid fa-key input-icon"></i>
+                    <input type="password" id="admin-password" placeholder="أدخل الرمز هنا..." style="padding-left: 45px;">
+                    <i class="fa-solid fa-eye toggle-password" id="toggle-admin-password" style="cursor: pointer; position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); z-index: 10;"></i>
+                </div>
+                <span class="error-msg hidden" id="admin-login-error" style="color: #ff8080; font-size: 0.8rem; display: block; margin-top: 5px;">كلمة المرور غير صحيحة، يرجى المحاولة مرة أخرى.</span>
+            </div>
+            
+            <button class="btn btn-submit" id="admin-login-btn" style="margin-top: 10px; width: 100%;">
+                <span id="admin-btn-text">تأكيد الدخول</span>
+                <span id="admin-btn-spinner" class="spinner hidden"><i class="fa-solid fa-circle-notch fa-spin"></i> جاري التحقق...</span>
+            </button>
+        </div>
+    </div>
+
     <script src="app.js"></script>
 </body>
 </html>

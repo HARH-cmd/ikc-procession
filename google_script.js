@@ -110,6 +110,35 @@ function doGet(e) {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
     var data = sheet.getDataRange().getValues();
     
+    // حساب عدد الطلاب المقبولين حالياً (باستثناء قائمة الاحتياط)
+    var activeStudentCount = 0;
+    if (data.length > 1) {
+      for (var i = 1; i < data.length; i++) {
+        var rowRole = data[i][2]; // العمود C (الصفة)
+        var rowWaiting = data[i][8]; // العمود I (الاحتياط)
+        if (rowRole === "طالب" && (rowWaiting === "لا" || !rowWaiting)) {
+          activeStudentCount++;
+        }
+      }
+    }
+    
+    // إذا كان الطلب فقط لمعرفة العدد الإجمالي للمقاعد (عام ومتاح للجميع بدون كلمة مرور)
+    if (e.parameter.action === "count") {
+      return ContentService.createTextOutput(JSON.stringify({
+        "status": "success",
+        "count": activeStudentCount
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    // التحقق من كلمة المرور لتأمين البيانات الكاملة
+    var password = e.parameter.password;
+    if (password !== "IKU@2026n") {
+      return ContentService.createTextOutput(JSON.stringify({
+        "status": "error",
+        "message": "غير مصرح بالوصول: كلمة المرور خاطئة أو غائبة"
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+    
     var registrations = [];
     if (data.length > 1) {
       for (var i = 1; i < data.length; i++) {

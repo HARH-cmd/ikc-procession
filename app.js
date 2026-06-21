@@ -31,6 +31,15 @@ const statTotal = document.getElementById("stat-total");
 const statStudents = document.getElementById("stat-students");
 const statWaiting = document.getElementById("stat-waiting");
 
+// Admin Login Modal Elements
+const adminLoginModal = document.getElementById("admin-login-modal");
+const adminPasswordInput = document.getElementById("admin-password");
+const toggleAdminPassword = document.getElementById("toggle-admin-password");
+const adminLoginError = document.getElementById("admin-login-error");
+const adminLoginBtn = document.getElementById("admin-login-btn");
+const adminBtnText = document.getElementById("admin-btn-text");
+const adminBtnSpinner = document.getElementById("admin-btn-spinner");
+
 // Local cache for registrations
 let allRegistrations = [];
 
@@ -67,41 +76,182 @@ function setupEventListeners() {
     
     // Export button
     exportBtn.addEventListener("click", exportToCSV);
+
+    // Admin Login handlers
+    if (adminLoginBtn) {
+        adminLoginBtn.addEventListener("click", handleAdminLogin);
+    }
+    if (adminPasswordInput) {
+        adminPasswordInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                handleAdminLogin();
+            }
+        });
+    }
+    if (toggleAdminPassword) {
+        toggleAdminPassword.addEventListener("click", () => {
+            const type = adminPasswordInput.getAttribute("type") === "password" ? "text" : "password";
+            adminPasswordInput.setAttribute("type", type);
+            toggleAdminPassword.classList.toggle("fa-eye");
+            toggleAdminPassword.classList.toggle("fa-eye-slash");
+        });
+    }
 }
 
 // Check if URL has #admin to show/hide Admin Panel
 function checkHashRoute() {
     if (window.location.hash === "#admin") {
-        adminCard.classList.remove("hidden");
-        // Scroll to admin dashboard
-        adminCard.scrollIntoView({ behavior: "smooth" });
-        fetchData(); // Load admin data
+        const storedPassword = sessionStorage.getItem("admin_password");
+        if (storedPassword) {
+            // If password already stored, fetch data using it
+            adminLoginModal.classList.add("hidden");
+            adminCard.classList.remove("hidden");
+            adminCard.scrollIntoView({ behavior: "smooth" });
+            fetchData(storedPassword);
+        } else {
+            // Otherwise show login modal, hide card contents
+            adminCard.classList.add("hidden");
+            adminLoginError.classList.add("hidden");
+            adminPasswordInput.value = "";
+            adminLoginModal.classList.remove("hidden");
+        }
     } else {
         adminCard.classList.add("hidden");
+        adminLoginModal.classList.add("hidden");
     }
 }
 
 
 
 // Fetch Registrations (Local storage or Google Sheets)
-function fetchData() {
+function fetchData(password = "") {
     if (SCRIPT_URL && SCRIPT_URL.startsWith("https://script.google.com")) {
-        // Fetch from Google Apps Script Web App
-        fetch(SCRIPT_URL)
+        // Build URL depending on whether we need public count or full admin access
+        let url = SCRIPT_URL;
+        if (password) {
+            url += `?password=${encodeURIComponent(password)}`;
+        } else {
+            // Public count request to update counter only
+            url += "?action=count";
+        }
+        
+        fetch(url)
             .then(res => res.json())
             .then(res => {
                 if (res.status === "success") {
-                    allRegistrations = res.data;
-                    updateUI();
+                    if (password) {
+                        // Full data fetched successfully
+                        allRegistrations = res.data;
+                        sessionStorage.setItem("admin_password", password);
+                        adminLoginModal.classList.add("hidden");
+                        adminCard.classList.remove("hidden");
+                        adminCard.scrollIntoView({ behavior: "smooth" });
+                        updateUI();
+                    } else {
+                        // Public count fetched successfully
+                        updateCounterOnly(res.count);
+                    }
+                } else if (res.status === "error" && res.message && res.message.includes("غير مصرح")) {
+                    // Password incorrect or unauthorized
+                    sessionStorage.removeItem("admin_password");
+                    adminLoginError.classList.remove("hidden");
+                    adminCard.classList.add("hidden");
+                    adminLoginModal.classList.remove("hidden");
                 }
             })
             .catch(err => {
                 console.error("Error fetching Google Sheets data:", err);
-                loadLocalData();
+                if (!password) {
+                    loadLocalData();
+                }
             });
     } else {
         // Local mode
         loadLocalData();
+    }
+}
+
+// Update only the seats progress bar (used for public requests)
+function updateCounterOnly(count) {
+    registeredCountSpan.innerText = count;
+    const percentage = Math.min((count / 100) * 100, 100);
+    counterBar.style.width = `${percentage}%`;
+    counterBar.className = "counter-bar";
+    if (count >= 100) {
+        counterBar.classList.add("danger");
+        counterStatus.innerText = "اكتمل المقاعد الأساسية للطلبة! التسجيل الحالي سيكون ضمن (قائمة الاحتياط).";
+        counterStatus.className = "counter-status waiting";
+    } else if (count >= 80) {
+        counterBar.classList.add("warning");
+        counterStatus.innerText = "المقاعد أوشكت على النفاد! سارع بالتسجيل.";
+        counterStatus.className = "counter-status";
+    } else {
+        counterStatus.innerText = "المقاعد الأساسية متوفرة حالياً، سيتم تأكيد المقعد عند إتمام الإرسال.";
+        counterStatus.className = "counter-status";
+    }
+}
+
+// Handle Admin password validation and submission
+function handleAdminLogin() {
+    const password = adminPasswordInput.value.trim();
+    if (!password) {
+        alert("يرجى إدخال كلمة المرور أولاً!");
+        adminPasswordInput.focus();
+        return;
+    }
+    
+    setAdminLoading(true);
+    adminLoginError.classList.add("hidden");
+    
+    if (SCRIPT_URL && SCRIPT_URL.startsWith("https://script.google.com")) {
+        const url = `${SCRIPT_URL}?password=${encodeURIComponent(password)}`;
+        fetch(url)
+            .then(res => res.json())
+            .then(res => {
+                if (res.status === "success") {
+                    allRegistrations = res.data;
+                    sessionStorage.setItem("admin_password", password);
+                    adminLoginModal.classList.add("hidden");
+                    adminCard.classList.remove("hidden");
+                    adminCard.scrollIntoView({ behavior: "smooth" });
+                    updateUI();
+                } else {
+                    sessionStorage.removeItem("admin_password");
+                    adminLoginError.classList.remove("hidden");
+                }
+            })
+            .catch(err => {
+                console.error("Authentication check failed:", err);
+                alert("فشل الاتصال بالخادم. يرجى التحقق من جودة الإنترنت.");
+            })
+            .finally(() => {
+                setAdminLoading(false);
+            });
+    } else {
+        // Local mode fallback
+        setTimeout(() => {
+            if (password === "IKU@2026n") {
+                sessionStorage.setItem("admin_password", password);
+                adminLoginModal.classList.add("hidden");
+                adminCard.classList.remove("hidden");
+                updateUI();
+            } else {
+                adminLoginError.classList.remove("hidden");
+            }
+            setAdminLoading(false);
+        }, 800);
+    }
+}
+
+function setAdminLoading(isLoading) {
+    if (isLoading) {
+        adminLoginBtn.disabled = true;
+        adminBtnText.classList.add("hidden");
+        adminBtnSpinner.classList.remove("hidden");
+    } else {
+        adminLoginBtn.disabled = false;
+        adminBtnText.classList.remove("hidden");
+        adminBtnSpinner.classList.add("hidden");
     }
 }
 
