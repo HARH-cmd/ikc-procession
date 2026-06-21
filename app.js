@@ -1,7 +1,7 @@
 // 1. Configuration
 // الصق رابط تطبيق الويب (Google Apps Script Web App URL) هنا للربط مع Google Sheets.
 // في حال بقائه فارغاً، سيعمل النظام تلقائياً على التخزين المحلي (LocalStorage) للتجربة والتدقيق.
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyH0ucAQxrEbfVbdoBCxHMo53N-QBvm9xojx5vxu_ZOAEYQu63hgCAs6T41r-_JVcrh2w/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwVJnpdQkc_fAc77cv8_HIBBAnWDkxovYVTBbEXcqC-WbfQLsA3l19CtP10VJtuM_CqFQ/exec";
 
 // 2. DOM Elements
 const form = document.getElementById("registration-form");
