@@ -5,9 +5,8 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyH0ucAQxrEbfVbdoBCx
 
 // 2. DOM Elements
 const form = document.getElementById("registration-form");
-const roleRadios = document.getElementsByName("role");
-const stageGroup = document.getElementById("stage-group");
 const stageSelect = document.getElementById("stage");
+const birthYearSelect = document.getElementById("birthYear");
 const phoneInput = document.getElementById("phone");
 const submitBtn = document.getElementById("submit-btn");
 const btnText = document.getElementById("btn-text");
@@ -31,7 +30,6 @@ const exportBtn = document.getElementById("export-btn");
 const statTotal = document.getElementById("stat-total");
 const statStudents = document.getElementById("stat-students");
 const statWaiting = document.getElementById("stat-waiting");
-const statStaff = document.getElementById("stat-staff");
 
 // Local cache for registrations
 let allRegistrations = [];
@@ -46,9 +44,6 @@ function initApp() {
     // Check url hash for admin mode
     checkHashRoute();
     
-    // Toggle Academic Stage visibility based on default selected role (Student)
-    toggleStageVisibility();
-    
     // Fetch and sync data
     fetchData();
 }
@@ -57,11 +52,6 @@ function setupEventListeners() {
     // Listen to hash change
     window.addEventListener("hashchange", checkHashRoute);
     
-    // Listen to role changes to hide/show academic stage
-    roleRadios.forEach(radio => {
-        radio.addEventListener("change", toggleStageVisibility);
-    });
-    
     // Handle form submit
     form.addEventListener("submit", handleFormSubmit);
     
@@ -69,7 +59,6 @@ function setupEventListeners() {
     modalCloseBtn.addEventListener("click", () => {
         successModal.classList.add("hidden");
         form.reset();
-        toggleStageVisibility();
         fetchData(); // Refresh counter
     });
     
@@ -92,18 +81,7 @@ function checkHashRoute() {
     }
 }
 
-// Toggle visibility of the Academic Stage select group
-function toggleStageVisibility() {
-    const selectedRole = document.querySelector('input[name="role"]:checked').value;
-    if (selectedRole === "طالب") {
-        stageGroup.classList.remove("collapsed");
-        stageSelect.setAttribute("required", "required");
-    } else {
-        stageGroup.classList.add("collapsed");
-        stageSelect.removeAttribute("required");
-        stageSelect.value = ""; // Reset
-    }
-}
+
 
 // Fetch Registrations (Local storage or Google Sheets)
 function fetchData() {
@@ -178,6 +156,7 @@ function handleFormSubmit(e) {
     const role = document.querySelector('input[name="role"]:checked').value;
     const department = document.getElementById("department").value;
     const stage = document.getElementById("stage").value;
+    const birthYear = document.getElementById("birthYear").value;
     const phone = phoneInput.value.trim();
     const notes = document.getElementById("notes").value.trim();
     
@@ -194,9 +173,10 @@ function handleFormSubmit(e) {
     
     const payload = {
         name,
-        role,
+        role: "طالب",
         department,
-        stage: role === "طالب" ? stage : "—",
+        stage,
+        birthYear,
         phone,
         notes: notes || "—"
     };
@@ -214,8 +194,7 @@ function handleFormSubmit(e) {
         .then(() => {
             // Because of no-cors, we can't read the response JSON directly, 
             // so we calculate the waiting list status locally for the UI feedback
-            const students = allRegistrations.filter(r => r.role === "طالب" && (r.waitingList === "لا" || r.waitingList === false));
-            const isWaiting = role === "طالب" && students.length >= 100;
+            const isWaiting = allRegistrations.length >= 100;
             showSuccessModal(payload, isWaiting);
         })
         .catch(err => {
@@ -236,16 +215,16 @@ function handleFormSubmit(e) {
 }
 
 function saveLocally(payload) {
-    const students = allRegistrations.filter(r => r.role === "طالب" && (r.waitingList === "لا" || r.waitingList === false));
-    const isWaiting = payload.role === "طالب" && students.length >= 100;
+    const isWaiting = allRegistrations.length >= 100;
     
     const newRecord = {
         id: allRegistrations.length + 1,
         timestamp: new Date().toISOString(),
         name: payload.name,
-        role: payload.role,
+        role: "طالب",
         department: payload.department,
         stage: payload.stage,
+        birthYear: payload.birthYear,
         phone: payload.phone,
         notes: payload.notes,
         waitingList: isWaiting ? "نعم" : "لا"
@@ -272,28 +251,21 @@ function setLoading(isLoading) {
 function showSuccessModal(data, isWaiting) {
     let resultHTML = `
         <p><strong>الاسم:</strong> ${data.name}</p>
-        <p><strong>الصفة:</strong> ${data.role}</p>
         <p><strong>القسم:</strong> ${data.department}</p>
-        ${data.role === "طالب" ? `<p><strong>المرحلة:</strong> ${data.stage}</p>` : ""}
+        <p><strong>المرحلة:</strong> ${data.stage}</p>
+        <p><strong>سنة الميلاد:</strong> ${data.birthYear}</p>
         <p><strong>رقم الهاتف:</strong> ${data.phone}</p>
     `;
     
-    if (data.role === "طالب") {
-        if (isWaiting) {
-            resultHTML += `
-                <div class="result-badge wait">قائمة الاحتياط</div>
-                <p style="color: #ff8080; font-size:0.85rem; margin-top: 5px;">تم تسجيلك ضمن قائمة الاحتياط لتجاوز العدد المتاح (100 طالب). سنخطرك في حال شواغر جديدة.</p>
-            `;
-        } else {
-            resultHTML += `
-                <div class="result-badge main">القائمة الأساسية (مؤكد)</div>
-                <p style="color: #80ffaa; font-size:0.85rem; margin-top: 5px;">مقعدك مؤكد ضمن الـ 100 طالب المشاركين رسمياً في الموكب.</p>
-            `;
-        }
+    if (isWaiting) {
+        resultHTML += `
+            <div class="result-badge wait">قائمة الاحتياط</div>
+            <p style="color: #ff8080; font-size:0.85rem; margin-top: 5px;">تم تسجيلك ضمن قائمة الاحتياط لتجاوز العدد المتاح (100 طالب). سنخطرك في حال شواغر جديدة.</p>
+        `;
     } else {
         resultHTML += `
-            <div class="result-badge main">الأساتذة</div>
-            <p style="color: #80ffaa; font-size:0.85rem; margin-top: 5px;">تم تسجيلك بنجاح للمشاركة في التنسيق والموكب الرسمي.</p>
+            <div class="result-badge main">القائمة الأساسية (مؤكد)</div>
+            <p style="color: #80ffaa; font-size:0.85rem; margin-top: 5px;">مقعدك مؤكد ضمن الـ 100 طالب المشاركين رسمياً في الموكب.</p>
         `;
     }
     
@@ -307,15 +279,12 @@ function renderAdminTable() {
     
     // Stats calculation
     const total = allRegistrations.length;
-    const studentsOnly = allRegistrations.filter(r => r.role === "طالب");
-    const activeStudentsCount = studentsOnly.filter(r => r.waitingList === "لا" || r.waitingList === false).length;
-    const waitingCount = studentsOnly.filter(r => r.waitingList === "نعم" || r.waitingList === true).length;
-    const staffCount = allRegistrations.filter(r => r.role !== "طالب").length;
+    const activeStudentsCount = allRegistrations.filter(r => r.waitingList === "لا" || r.waitingList === false).length;
+    const waitingCount = allRegistrations.filter(r => r.waitingList === "نعم" || r.waitingList === true).length;
     
     statTotal.innerText = total;
     statStudents.innerText = activeStudentsCount;
     statWaiting.innerText = waitingCount;
-    statStaff.innerText = staffCount;
     
     // Sort registrations: latest first
     const sorted = [...allRegistrations].reverse();
@@ -334,9 +303,9 @@ function renderAdminTable() {
         tr.innerHTML = `
             <td>${sorted.length - idx}</td>
             <td><strong>${r.name}</strong></td>
-            <td>${r.role}</td>
             <td>${r.department}</td>
             <td>${r.stage}</td>
+            <td>${r.birthYear || "—"}</td>
             <td>${r.phone}</td>
             <td><span class="waiting-tag ${tagClass}">${waitingText}</span></td>
             <td style="font-size:0.75rem; color:var(--text-muted);">${formattedDate}</td>
@@ -368,7 +337,7 @@ function exportToCSV() {
     }
     
     // Prepare header row
-    const headers = ["ت", "الاسم الكامل", "الصفة", "القسم العلمي", "المرحلة الدراسية", "رقم الهاتف", "ملاحظات", "قائمة الاحتياط", "تاريخ التسجيل"];
+    const headers = ["ت", "الاسم الكامل", "الصفة", "القسم العلمي", "المرحلة الدراسية", "سنة الميلاد", "رقم الهاتف", "ملاحظات", "قائمة الاحتياط", "تاريخ التسجيل"];
     
     // Build CSV content
     let csvRows = [];
@@ -381,6 +350,7 @@ function exportToCSV() {
             `"${r.role}"`,
             `"${r.department}"`,
             `"${r.stage}"`,
+            `"${r.birthYear || "—"}"`,
             `"'${r.phone}"`, // Prepend single quote for Excel formatting
             `"${(r.notes || "—").replace(/"/g, '""')}"`,
             `"${r.waitingList === "نعم" || r.waitingList === true ? "نعم" : "لا"}"`,

@@ -427,19 +427,39 @@ textarea {
     color: var(--text-muted);
 }
 
-/* Hide stage group by default when animated */
-#stage-group {
+/* Hide stage and birth year groups by default when animated */
+#stage-group, #birth-year-group {
     max-height: 200px;
     opacity: 1;
     overflow: hidden;
     transition: all 0.4s ease-in-out;
 }
 
-#stage-group.collapsed {
+#stage-group.collapsed, #birth-year-group.collapsed {
     max-height: 0;
     opacity: 0;
     margin-bottom: 0;
     pointer-events: none;
+}
+
+/* Uniform Alert Styling */
+.uniform-alert {
+    background-color: rgba(212, 175, 55, 0.08);
+    border: 1px dashed var(--gold);
+    border-radius: 10px;
+    padding: 12px 15px;
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.88rem;
+    color: var(--gold-light);
+    text-align: right;
+}
+
+.uniform-alert i {
+    font-size: 1.2rem;
+    color: var(--gold);
 }
 
 /* Button Styling */
