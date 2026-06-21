@@ -153,7 +153,7 @@ function handleFormSubmit(e) {
     e.preventDefault();
     
     const name = document.getElementById("fullName").value.trim();
-    const role = document.querySelector('input[name="role"]:checked').value;
+    const role = "طالب";
     const department = document.getElementById("department").value;
     const stage = document.getElementById("stage").value;
     const birthYear = document.getElementById("birthYear").value;
