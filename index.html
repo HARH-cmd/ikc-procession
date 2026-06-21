@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل موكب كلية الإمام الكاظم (ع)</title>
+    <!-- Google Fonts: Amiri & Cairo -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="stars-container"></div>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <img src="لوكو كلية الامام الكاظم ابيض.jpeg" alt="شعار كلية الإمام الكاظم" class="college-logo">
+            </div>
+            <h1>موكب كلية الإمام الكاظم (عليه السلام)</h1>
+            <p class="subtitle">لإحياء ذكرى استشهاد الإمام الحسين (ع) - موكب طلبة الجامعات 2026</p>
+        </header>
+
+        <!-- Main Content Wrapper -->
+        <main class="main-content">
+            
+            <!-- Section: Announcement Card -->
+            <section class="announcement-section card">
+                <div class="badge">إعلان رسمي</div>
+                <h2>دعوة للمشاركة في عزاء طلبة الجامعات</h2>
+                
+                <div class="design-preview-container">
+                    <img src="تصميم موكب كلية الامام الكاظم.png" alt="تصميم الإعلان الرسمي لموكب كلية الإمام الكاظم" class="design-img">
+                </div>
+
+                <div class="details-grid">
+                    <div class="detail-item">
+                        <i class="fa-solid fa-calendar-days"></i>
+                        <div>
+                            <h3>تاريخ التجمع والانطلاق</h3>
+                            <p>السبت 4 تموز 2026م</p>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <div>
+                            <h3>مكان التجمع</h3>
+                            <p>بوابة دخول الكلية الرئيسية</p>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fa-solid fa-flag"></i>
+                        <div>
+                            <h3>الوجهة والفعالية</h3>
+                            <p>كربلاء المقدسة (الأحد 5/7)</p>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fa-solid fa-users-line"></i>
+                        <div>
+                            <h3>العدد المتاح للطلبة</h3>
+                            <p>100 طالب (ثم قائمة الاحتياط)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="announcement-paragraph">
+                    انطلاقاً من قوله تعالى <b>{ذَٰلِكَ وَمَن يُعَظِّمْ شَعَائِرَ اللَّهِ فَإِنَّهَا مِن تَقْوَى الْقُلُوبِ}</b>، تدعو عمادة كلية الإمام الكاظم (ع) - شعبة النشاط الطلابي أساتذتها الكرام وطلبتها الأعزاء للمشاركة الفعالة في موكب عزاء طلبة الجامعات العراقية في كربلاء المقدسة. يرجى ملء الاستمارة أدناه لتأكيد حضوركم وتأمين التنسيق الإداري.
+                </p>
+            </section>
+
+            <!-- Section: Registration Form -->
+            <section class="registration-section card" id="register-card">
+                <div class="card-header">
+                    <i class="fa-solid fa-pen-to-square form-icon"></i>
+                    <h2>استمارة تسجيل الحضور</h2>
+                    <p>يرجى إدخال معلوماتك الشخصية بدقة</p>
+                </div>
+
+                <!-- Live Student Seats Counter -->
+                <div class="seats-counter" id="seats-counter-box">
+                    <div class="counter-label">المقاعد الأساسية للطلبة:</div>
+                    <div class="counter-bar-wrapper">
+                        <div class="counter-bar" id="counter-bar"></div>
+                    </div>
+                    <div class="counter-value"><span id="registered-students-count">0</span> / 100</div>
+                    <div class="counter-status" id="counter-status">المقاعد الأساسية متوفرة حالياً</div>
+                </div>
+
+                <form id="registration-form">
+                    <!-- Full Name -->
+                    <div class="form-group">
+                        <label for="fullName">الاسم الثلاثي واللقب <span class="required">*</span></label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-user input-icon"></i>
+                            <input type="text" id="fullName" required placeholder="مثال: أحمد علي حسين الخفاجي">
+                        </div>
+                    </div>
+
+                    <!-- Role -->
+                    <div class="form-group">
+                        <label>الصفة <span class="required">*</span></label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="role" value="طالب" checked required>
+                                <span class="custom-radio"></span>
+                                <span class="radio-text"><i class="fa-solid fa-graduation-cap"></i> طالب</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="role" value="تدريسي">
+                                <span class="custom-radio"></span>
+                                <span class="radio-text"><i class="fa-solid fa-chalkboard-user"></i> أستاذ / تدريسي</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Department -->
+                    <div class="form-group">
+                        <label for="department">القسم العلمي <span class="required">*</span></label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-building-columns input-icon"></i>
+                            <select id="department" required>
+                                <option value="" disabled selected>اختر قسمك العلمي...</option>
+                                <option value="هندسة تقنيات الحاسوب">هندسة تقنيات الحاسوب</option>
+                                <option value="الأمن السيبراني">الأمن السيبراني</option>
+                                <option value="القانون">القانون</option>
+                                <option value="العلوم المالية والمصرفية">العلوم المالية والمصرفية</option>
+                                <option value="إدارة الأعمال">إدارة الأعمال</option>
+                                <option value="الإعلام">الإعلام</option>
+                                <option value="العلوم السياسية">العلوم السياسية</option>
+                                <option value="اللغة الإنكليزية">اللغة الإنكليزية</option>
+                                <option value="اللغة العربية">اللغة العربية</option>
+                                <option value="التاريخ">التاريخ</option>
+                                <option value="علوم القران والحديث">علوم القران والحديث</option>
+                                <option value="الشريعة">الشريعة</option>
+                                <option value="رياض الأطفال والتربية الخاصة">رياض الأطفال والتربية الخاصة</option>
+                                <option value="الفكر الإسلامي">الفكر الإسلامي</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Academic Stage (Visible only for students) -->
+                    <div class="form-group" id="stage-group">
+                        <label for="stage">المرحلة الدراسية <span class="required">*</span></label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-arrow-up-1-9 input-icon"></i>
+                            <select id="stage">
+                                <option value="" disabled selected>اختر المرحلة الدراسية...</option>
+                                <option value="المرحلة الأولى">المرحلة الأولى</option>
+                                <option value="المرحلة الثانية">المرحلة الثانية</option>
+                                <option value="المرحلة الثالثة">المرحلة الثالثة</option>
+                                <option value="المرحلة الرابعة">المرحلة الرابعة</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Phone Number -->
+                    <div class="form-group">
+                        <label for="phone">رقم الهاتف (واتساب / تليكرام) <span class="required">*</span></label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-phone input-icon"></i>
+                            <input type="tel" id="phone" required placeholder="مثال: 077XXXXXXXX أو 078XXXXXXXX" pattern="^(077|078|075)[0-9]{8}$">
+                        </div>
+                        <span class="input-help">يجب أن يبدأ بـ 07 ويتكون من 11 رقماً للتواصل معكم عبر المنسق.</span>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="form-group">
+                        <label for="notes">ملاحظات إضافية (اختياري)</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-comment input-icon"></i>
+                            <textarea id="notes" placeholder="أي معلومات أو تفاصيل ترغب في إعلام الإدارة بها..."></textarea>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-submit" id="submit-btn">
+                        <span id="btn-text">إرسال طلب التسجيل</span>
+                        <span id="btn-spinner" class="spinner hidden"><i class="fa-solid fa-circle-notch fa-spin"></i> جاري الإرسال...</span>
+                    </button>
+                </form>
+            </section>
+
+            <!-- Admin Section (Hidden by default, triggered via url hash #admin) -->
+            <section class="admin-section card hidden" id="admin-card">
+                <div class="card-header">
+                    <i class="fa-solid fa-user-shield admin-icon"></i>
+                    <h2>لوحة إدارة موكب الكلية</h2>
+                    <p>خاص باللجنة التنظيمية (الأستاذ محمد رضا عبد الهادي)</p>
+                </div>
+                
+                <div class="admin-actions">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="admin-search" placeholder="ابحث باسم المشارك أو القسم أو رقم الهاتف...">
+                    </div>
+                    <button class="btn btn-export" id="export-btn">
+                        <i class="fa-solid fa-file-excel"></i> تصدير البيانات إلى Excel (CSV)
+                    </button>
+                </div>
+
+                <div class="admin-stats">
+                    <div class="stat-card">
+                        <span class="stat-num" id="stat-total">0</span>
+                        <span class="stat-label">إجمالي المسجلين</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-num" id="stat-students">0</span>
+                        <span class="stat-label">الطلاب (الأساسيين)</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-num" id="stat-waiting">0</span>
+                        <span class="stat-label">قائمة الاحتياط</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-num" id="stat-staff">0</span>
+                        <span class="stat-label">الأساتذة</span>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="admin-table" id="registrations-table">
+                        <thead>
+                            <tr>
+                                <th>ت</th>
+                                <th>الاسم الكامل</th>
+                                <th>الصفة</th>
+                                <th>القسم العلمي</th>
+                                <th>المرحلة</th>
+                                <th>رقم الهاتف</th>
+                                <th>الاحتياط</th>
+                                <th>التاريخ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <!-- Rows dynamic -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>اللجنة المنظمة لموكب كلية الإمام الكاظم (ع)</p>
+            <p class="copyright">تصميم وتطوير: <a href="https://instagram.com/rajab.div" target="_blank" style="color: var(--gold); text-decoration: underline; font-weight: bold;">حسين رجب</a> &copy; 2026</p>
+        </footer>
+    </div>
+
+    <!-- Modal Success Popup -->
+    <div class="modal hidden" id="success-modal">
+        <div class="modal-content card">
+            <i class="fa-solid fa-circle-check modal-check-icon"></i>
+            <h2>تم التسجيل بنجاح!</h2>
+            <div id="registration-result-box" class="result-box">
+                <!-- Filled via JS -->
+            </div>
+            <p class="modal-notice">عظم الله أجورنا وأجوركم بمصاب سيد الشهداء (عليه السلام)</p>
+            <button class="btn btn-close" id="modal-close-btn">حسناً</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
