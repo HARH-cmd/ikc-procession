@@ -66,7 +66,7 @@ function doPost(e) {
       for (var i = 1; i < data.length; i++) {
         var rowRole = data[i][2]; // العمود C (الصفة)
         var rowWaiting = data[i][8]; // العمود I (الاحتياط)
-        if (rowRole === "طالب" && rowWaiting === "لا") {
+        if (rowRole === "طالب" && (rowWaiting === "لا" || !rowWaiting)) {
           activeStudentCount++;
         }
       }
