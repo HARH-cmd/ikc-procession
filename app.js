@@ -297,7 +297,7 @@ function loadLocalData() {
 function updateUI() {
     // 1. Calculate active student count (where waitingList === "لا" and role === "طالب")
     const students = allRegistrations.filter(r => r.role === "طالب");
-    const activeStudents = students.filter(r => r.waitingList === "لا" || r.waitingList === false);
+    const activeStudents = students.filter(r => r.role === "طالب" && r.gender === "ذكر" && (r.waitingList === "لا" || r.waitingList === false));
     const count = activeStudents.length;
     
     // Update Seats Counter
@@ -416,7 +416,8 @@ function saveLocally(payload) {
         return;
     }
 
-    const isWaiting = allRegistrations.length >= 100;
+    const activeMalesCount = allRegistrations.filter(r => r.role === "طالب" && r.gender === "ذكر" && (r.waitingList === "لا" || r.waitingList === false)).length;
+    const isWaiting = payload.gender === "أنثى" || activeMalesCount >= 100;
     
     const newRecord = {
         id: allRegistrations.length + 1,
@@ -482,7 +483,7 @@ function renderAdminTable() {
     
     // Stats calculation
     const total = allRegistrations.length;
-    const activeStudentsCount = allRegistrations.filter(r => r.waitingList === "لا" || r.waitingList === false).length;
+    const activeStudentsCount = allRegistrations.filter(r => r.role === "طالب" && r.gender === "ذكر" && (r.waitingList === "لا" || r.waitingList === false)).length;
     const waitingCount = allRegistrations.filter(r => r.waitingList === "نعم" || r.waitingList === true).length;
     
     statTotal.innerText = total;

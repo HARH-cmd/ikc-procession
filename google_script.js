@@ -77,23 +77,27 @@ function doPost(e) {
       }
     }
     
-    // 2. حساب عدد الطلاب المسجلين حالياً (باستثناء قائمة الاحتياط)
+        // 2. حساب عدد الطلاب المسجلين حالياً (القبول للذكور فقط ضمن الـ 100 والنساء في الاحتياط)
     var isWaitingList = "لا";
     if (role === "طالب") {
-      var activeStudentCount = 0;
-      if (data.length > 1) {
-        for (var i = 1; i < data.length; i++) {
-          var rowRole = data[i][2]; // العمود C (الصفة)
-          var rowWaiting = data[i][8]; // العمود I (الاحتياط)
-          if (rowRole === "طالب" && (rowWaiting === "لا" || !rowWaiting)) {
-            activeStudentCount++;
+      if (gender === "أنثى") {
+        isWaitingList = "نعم";
+      } else {
+        var activeMaleCount = 0;
+        if (data.length > 1) {
+          for (var i = 1; i < data.length; i++) {
+            var rowGender = data[i][2]; // العمود C (الجنس)
+            var rowRole = data[i][3]; // العمود D (الصفة)
+            var rowWaiting = data[i][9]; // العمود J (الاحتياط)
+            if (rowRole === "طالب" && rowGender === "ذكر" && (rowWaiting === "لا" || !rowWaiting)) {
+              activeMaleCount++;
+            }
           }
         }
-      }
-      
-      // إذا تجاوز العدد 100 طالب، يتم تحويله للاحتياط
-      if (activeStudentCount >= 100) {
-        isWaitingList = "نعم";
+        
+        if (activeMaleCount >= 100) {
+          isWaitingList = "نعم";
+        }
       }
     }
     
@@ -130,13 +134,14 @@ function doGet(e) {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
     var data = sheet.getDataRange().getValues();
     
-    // حساب عدد الطلاب المقبولين حالياً (باستثناء قائمة الاحتياط)
+        // حساب عدد الطلاب الذكور المقبولين حالياً في القائمة الأساسية
     var activeStudentCount = 0;
     if (data.length > 1) {
       for (var i = 1; i < data.length; i++) {
+        var rowGender = data[i][2]; // العمود C (الجنس)
         var rowRole = data[i][3]; // العمود D (الصفة)
         var rowWaiting = data[i][9]; // العمود J (الاحتياط)
-        if (rowRole === "طالب" && (rowWaiting === "لا" || !rowWaiting)) {
+        if (rowRole === "طالب" && rowGender === "ذكر" && (rowWaiting === "لا" || !rowWaiting)) {
           activeStudentCount++;
         }
       }
