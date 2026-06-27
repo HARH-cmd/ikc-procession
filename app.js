@@ -125,6 +125,7 @@ function checkHashRoute() {
 
 // Fetch Registrations (Local storage or Google Sheets)
 function fetchData(password = "") {
+    const startTime = Date.now();
     if (SCRIPT_URL && SCRIPT_URL.startsWith("https://script.google.com")) {
         // Build URL depending on whether we need public count or full admin access
         let url = SCRIPT_URL;
@@ -138,7 +139,10 @@ function fetchData(password = "") {
         fetch(url)
             .then(res => res.json())
             .then(res => {
-                if (res.status === "success") {
+        const elapsed = Date.now() - startTime;
+        const delay = Math.max(0, 1000 - elapsed);
+        setTimeout(() => {
+            if (res.status === "success") {
                     // Remove spinning class from refresh button
                     const refreshBtn = document.getElementById("refresh-data-btn");
                     if (refreshBtn) refreshBtn.classList.remove("spinning");
@@ -178,13 +182,18 @@ function fetchData(password = "") {
                     adminCard.classList.add("hidden");
                     adminLoginModal.classList.remove("hidden");
                 }
-            })
+        }, delay);
+        })
             .catch(err => {
-                console.error("Error fetching Google Sheets data:", err);
+        const elapsed = Date.now() - startTime;
+        const delay = Math.max(0, 1000 - elapsed);
+        setTimeout(() => {
+            console.error("Error fetching Google Sheets data:", err);
                 if (!password) {
                     loadLocalData();
                 }
-            });
+        }, delay);
+        });
     } else {
         // Local mode
         loadLocalData();
