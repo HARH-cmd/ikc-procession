@@ -140,8 +140,17 @@ function fetchData(password = "") {
             .then(res => {
                 if (res.status === "success") {
                     if (password) {
-                        // Full data fetched successfully
-                        allRegistrations = res.data;
+                        // Full data fetched successfully - Deduplicate by phone
+                        var uniqueData = [];
+                        var seenPhones = {};
+                        res.data.forEach(function(item) {
+                            var cleanPhone = item.phone.toString().replace(/[^0-9]/g, "");
+                            if (!seenPhones[cleanPhone]) {
+                                seenPhones[cleanPhone] = true;
+                                uniqueData.push(item);
+                            }
+                        });
+                        allRegistrations = uniqueData.filter(r => !r.name.includes("محمد رضا عبد الهادي"));
                         sessionStorage.setItem("admin_password", password);
                         adminLoginModal.classList.add("hidden");
                         adminCard.classList.remove("hidden");
@@ -209,7 +218,16 @@ function handleAdminLogin() {
             .then(res => res.json())
             .then(res => {
                 if (res.status === "success") {
-                    allRegistrations = res.data;
+                    var uniqueData = [];
+                    var seenPhones = {};
+                    res.data.forEach(function(item) {
+                        var cleanPhone = item.phone.toString().replace(/[^0-9]/g, "");
+                        if (!seenPhones[cleanPhone]) {
+                            seenPhones[cleanPhone] = true;
+                            uniqueData.push(item);
+                        }
+                    });
+                    allRegistrations = uniqueData.filter(r => !r.name.includes("محمد رضا عبد الهادي"));
                     sessionStorage.setItem("admin_password", password);
                     adminLoginModal.classList.add("hidden");
                     adminCard.classList.remove("hidden");
@@ -258,7 +276,17 @@ function setAdminLoading(isLoading) {
 function loadLocalData() {
     const stored = localStorage.getItem("procession_registrations");
     if (stored) {
-        allRegistrations = JSON.parse(stored);
+        var parsed = JSON.parse(stored);
+        var uniqueData = [];
+        var seenPhones = {};
+        parsed.forEach(function(item) {
+            var cleanPhone = item.phone.toString().replace(/[^0-9]/g, "");
+            if (!seenPhones[cleanPhone]) {
+                seenPhones[cleanPhone] = true;
+                uniqueData.push(item);
+            }
+        });
+        allRegistrations = uniqueData.filter(r => !r.name.includes("محمد رضا عبد الهادي"));
     } else {
         allRegistrations = [];
     }
@@ -296,6 +324,9 @@ function updateUI() {
     
     // 2. Render Admin table and stats
     renderAdminTable();
+    
+    // 3. Render Analytics Charts
+    renderAnalytics();
 }
 
 // Handle form submission
@@ -332,20 +363,28 @@ function handleFormSubmit(e) {
     };
     
     if (SCRIPT_URL && SCRIPT_URL.startsWith("https://script.google.com")) {
-        // Submit to Google Apps Script
+        // Submit to Google Apps Script using simple request (CORS-enabled via text/plain)
         fetch(SCRIPT_URL, {
             method: "POST",
-            mode: "no-cors", // Required for Apps Script Web App redirect
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "text/plain"
             },
             body: JSON.stringify(payload)
         })
-        .then(() => {
-            // Because of no-cors, we can't read the response JSON directly, 
-            // so we calculate the waiting list status locally for the UI feedback
-            const isWaiting = allRegistrations.length >= 100;
-            showSuccessModal(payload, isWaiting);
+        .then(res => {
+            if (!res.ok) {
+                throw new Error("HTTP error " + res.status);
+            }
+            return res.json();
+        })
+        .then(res => {
+            if (res.status === "success") {
+                showSuccessModal(payload, res.waitingList);
+            } else if (res.status === "duplicate") {
+                alert("عذراً، هذا الرقم مسجل مسبقاً في المنظومة!");
+            } else {
+                alert("فشل التسجيل: " + res.message);
+            }
         })
         .catch(err => {
             console.error("Error submitting to Google Sheets:", err);
@@ -365,6 +404,16 @@ function handleFormSubmit(e) {
 }
 
 function saveLocally(payload) {
+    // Check if phone number already exists locally
+    var cleanNewPhone = payload.phone.toString().replace(/[^0-9]/g, "");
+    var duplicate = allRegistrations.some(function(r) {
+        return r.phone.toString().replace(/[^0-9]/g, "") === cleanNewPhone;
+    });
+    if (duplicate) {
+        alert("عذراً، هذا الرقم مسجل مسبقاً في المنظومة!");
+        return;
+    }
+
     const isWaiting = allRegistrations.length >= 100;
     
     const newRecord = {
@@ -522,4 +571,73 @@ function exportToCSV() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+}
+
+// ==========================================================================
+// قسم الإحصائيات التحليلية المطور
+// ==========================================================================
+function renderAnalytics() {
+    const deptContainer = document.getElementById("dept-stats-container");
+    const stageContainer = document.getElementById("stage-stats-container");
+    const ageContainer = document.getElementById("age-stats-container");
+    
+    if (!deptContainer || !stageContainer || !ageContainer) return;
+    
+    deptContainer.innerHTML = "";
+    stageContainer.innerHTML = "";
+    ageContainer.innerHTML = "";
+    
+    const total = allRegistrations.length;
+    if (total === 0) {
+        const noData = `<p style="text-align:center; color:var(--text-muted); font-size:0.85rem; margin:10px 0;">لا توجد بيانات كافية للحساب</p>`;
+        deptContainer.innerHTML = noData;
+        stageContainer.innerHTML = noData;
+        ageContainer.innerHTML = noData;
+        return;
+    }
+    
+    // 1. حساب وتوزيع الأقسام العلمية
+    const depts = {};
+    allRegistrations.forEach(r => {
+        const d = r.department || "غير محدد";
+        depts[d] = (depts[d] || 0) + 1;
+    });
+    renderBarChart(deptContainer, depts, total);
+    
+    // 2. حساب وتوزيع المراحل الدراسية
+    const stages = {};
+    allRegistrations.forEach(r => {
+        const s = r.stage || "غير محدد";
+        stages[s] = (stages[s] || 0) + 1;
+    });
+    renderBarChart(stageContainer, stages, total);
+    
+    // 3. حساب وتوزيع الأعمار وسنوات الميلاد
+    const ages = {};
+    allRegistrations.forEach(r => {
+        const y = r.birthYear || "غير محدد";
+        ages[y] = (ages[y] || 0) + 1;
+    });
+    renderBarChart(ageContainer, ages, total);
+}
+
+function renderBarChart(container, dataObj, total) {
+    // ترتيب العناصر تنازلياً حسب القيمة
+    const sorted = Object.entries(dataObj).sort((a, b) => b[1] - a[1]);
+    
+    sorted.forEach(([key, val]) => {
+        const pct = ((val / total) * 100).toFixed(1);
+        const barHtml = `
+            <div class="stat-bar-group">
+                <div class="stat-bar-info">
+                    <span class="stat-bar-label">${key}</span>
+                    <span class="stat-bar-val">${val} طالب (${pct}%)</span>
+                </div>
+                <div class="stat-bar-bg">
+                    <div class="stat-bar-fill" style="width: ${pct}%"></div>
+                </div>
+            </div>
+        `;
+        container.insertAdjacentHTML("beforeend", barHtml);
+    });
 }

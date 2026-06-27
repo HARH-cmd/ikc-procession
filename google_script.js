@@ -57,17 +57,36 @@ function doPost(e) {
       })).setMimeType(ContentService.MimeType.JSON);
     }
     
-    // حساب عدد الطلاب المسجلين حالياً (باستثناء قائمة الاحتياط)
+    var data = sheet.getDataRange().getValues();
+    
+    // 1. التحقق من تكرار رقم الهاتف لمنع التسجيل المزدوج
+    if (phone) {
+      var cleanNewPhone = phone.toString().replace(/[^0-9]/g, "");
+      if (data.length > 1) {
+        for (var i = 1; i < data.length; i++) {
+          var rowPhone = data[i][6].toString().replace(/[^0-9]/g, ""); // العمود G (رقم الهاتف)
+          if (rowPhone === cleanNewPhone) {
+            lock.releaseLock();
+            return ContentService.createTextOutput(JSON.stringify({
+              "status": "duplicate",
+              "message": "عذراً، هذا الرقم مسجل مسبقاً في المنظومة!"
+            })).setMimeType(ContentService.MimeType.JSON);
+          }
+        }
+      }
+    }
+    
+    // 2. حساب عدد الطلاب المسجلين حالياً (باستثناء قائمة الاحتياط)
     var isWaitingList = "لا";
     if (role === "طالب") {
-      var data = sheet.getDataRange().getValues();
       var activeStudentCount = 0;
-      
-      for (var i = 1; i < data.length; i++) {
-        var rowRole = data[i][2]; // العمود C (الصفة)
-        var rowWaiting = data[i][8]; // العمود I (الاحتياط)
-        if (rowRole === "طالب" && (rowWaiting === "لا" || !rowWaiting)) {
-          activeStudentCount++;
+      if (data.length > 1) {
+        for (var i = 1; i < data.length; i++) {
+          var rowRole = data[i][2]; // العمود C (الصفة)
+          var rowWaiting = data[i][8]; // العمود I (الاحتياط)
+          if (rowRole === "طالب" && (rowWaiting === "لا" || !rowWaiting)) {
+            activeStudentCount++;
+          }
         }
       }
       
@@ -138,7 +157,6 @@ function doGet(e) {
         "message": "غير مصرح بالوصول: كلمة المرور خاطئة أو غائبة"
       })).setMimeType(ContentService.MimeType.JSON);
     }
-    
     var registrations = [];
     if (data.length > 1) {
       for (var i = 1; i < data.length; i++) {
