@@ -139,6 +139,17 @@ function fetchData(password = "") {
             .then(res => res.json())
             .then(res => {
                 if (res.status === "success") {
+                    // Remove spinning class from refresh button
+                    const refreshBtn = document.getElementById("refresh-data-btn");
+                    if (refreshBtn) refreshBtn.classList.remove("spinning");
+                    
+                    // Update last updated status
+                    const refreshStatus = document.getElementById("refresh-status");
+                    if (refreshStatus) {
+                        const now = new Date().toLocaleTimeString("ar-IQ", { hour12: true });
+                        refreshStatus.innerHTML = `تحديث تلقائي نشط 🟢 - آخر تحديث: ${now}`;
+                    }
+
                     if (password) {
                         // Full data fetched successfully - Deduplicate by phone
                         var uniqueData = [];
@@ -659,3 +670,35 @@ function renderBarChart(container, dataObj, total) {
         container.insertAdjacentHTML("beforeend", barHtml);
     });
 }
+
+// Global variables for intervals
+let autoRefreshInterval = null;
+let currentPassword = "";
+
+// Start auto refresh for admin
+function startAdminAutoRefresh(password) {
+    currentPassword = password;
+    if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+    autoRefreshInterval = setInterval(() => {
+        const refreshBtn = document.getElementById("refresh-data-btn");
+        if (refreshBtn) refreshBtn.classList.add("spinning");
+        fetchData(password);
+    }, 30000); // every 30 seconds
+}
+
+// Stop auto refresh
+function stopAdminAutoRefresh() {
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+        autoRefreshInterval = null;
+    }
+}
+
+// Set up public counter auto refresh (every 15 seconds)
+setInterval(() => {
+    const adminPanel = document.getElementById("admin-panel");
+    // Only fetch public count if admin panel is not visible (i.e. we are on registration page)
+    if (adminPanel && adminPanel.classList.contains("hidden")) {
+        fetchData();
+    }
+}, 15000);

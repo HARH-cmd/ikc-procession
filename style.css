@@ -829,3 +829,38 @@ textarea {
     border-radius: 4px;
     transition: width 0.8s ease-in-out;
 }
+
+/* Real-time Refresh Styles */
+.btn-refresh {
+    background: rgba(212, 175, 55, 0.1);
+    color: var(--primary);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    margin-left: 10px;
+}
+
+.btn-refresh:hover {
+    background: var(--primary);
+    color: var(--bg-darker);
+    border-color: var(--primary);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+}
+
+.refresh-status {
+    font-size: 0.8rem;
+    color: #80ffaa;
+    margin-right: 10px;
+    background: rgba(128, 255, 170, 0.1);
+    padding: 2px 8px;
+    border-radius: 12px;
+    border: 1px solid rgba(128, 255, 170, 0.2);
+    display: inline-block;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.spinning i {
+    animation: spin 1s linear infinite;
+}
