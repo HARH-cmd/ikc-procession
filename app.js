@@ -506,6 +506,8 @@ function renderAdminTable() {
         tr.innerHTML = `
             <td>${sorted.length - idx}</td>
             <td><strong>${r.name}</strong></td>
+
+            <td>${r.gender || "ذكر"}</td>
             <td>${r.department}</td>
             <td>${r.stage}</td>
             <td>${r.birthYear || "—"}</td>
@@ -540,7 +542,7 @@ function exportToCSV() {
     }
     
     // Prepare header row
-    const headers = ["ت", "الاسم الكامل", "الصفة", "القسم العلمي", "المرحلة الدراسية", "سنة الميلاد", "رقم الهاتف", "ملاحظات", "قائمة الاحتياط", "تاريخ التسجيل"];
+    const headers = ["ت", "الاسم الكامل", "الجنس", "الصفة", "القسم العلمي", "المرحلة الدراسية", "سنة الميلاد", "رقم الهاتف", "ملاحظات", "قائمة الاحتياط", "تاريخ التسجيل"];
     
     // Build CSV content
     let csvRows = [];
