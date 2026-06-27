@@ -711,3 +711,43 @@ setInterval(() => {
         fetchData();
     }
 }, 15000);
+
+// Export accepted students to VCF (vCard) file for phone import
+function exportToVCF() {
+    if (!allRegistrations || allRegistrations.length === 0) {
+        showWarningModal("لا توجد بيانات", "لا توجد أي بيانات لتصديرها حالياً.");
+        return;
+    }
+    
+    // Filter only accepted male students in the basic list
+    const accepted = allRegistrations.filter(r => 
+        r.role === "طالب" && 
+        r.gender === "ذكر" && 
+        (r.waitingList === "لا" || r.waitingList === false || !r.waitingList)
+    );
+    
+    if (accepted.length === 0) {
+        showWarningModal("لا يوجد مقبولين", "لا يوجد أي طلاب مقبولين في القائمة الأساسية حالياً لتصديرهم.");
+        return;
+    }
+    
+    let vcardContent = "";
+    accepted.forEach(r => {
+        vcardContent += "BEGIN:VCARD\n";
+        vcardContent += "VERSION:3.0\n";
+        vcardContent += `FN:موكب - ${r.name}\n`;
+        // Clean phone number to ensure it has no spaces or special characters
+        const cleanPhone = r.phone.toString().replace(/[^0-9+]/g, "");
+        vcardContent += `TEL;TYPE=CELL:${cleanPhone}\n`;
+        vcardContent += "END:VCARD\n";
+    });
+    
+    // Download VCF file
+    const blob = new Blob([vcardContent], { type: "text/vcard;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute("download", "مقبولي_الموكب_جهات_اتصال.vcf");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}

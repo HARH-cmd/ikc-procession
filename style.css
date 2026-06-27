@@ -864,3 +864,18 @@ textarea {
 .spinning i {
     animation: spin 1s linear infinite;
 }
+
+/* VCF Export Button Styles */
+.btn-vcf {
+    background: rgba(128, 170, 255, 0.1);
+    color: #80aaff;
+    border: 1px solid rgba(128, 170, 255, 0.3);
+    margin-left: 10px;
+}
+
+.btn-vcf:hover {
+    background: #80aaff;
+    color: var(--bg-darker);
+    border-color: #80aaff;
+    box-shadow: 0 0 15px rgba(128, 170, 255, 0.4);
+}
