@@ -105,6 +105,7 @@ function doPost(e) {
     sheet.appendRow([
       timestamp, 
       name, 
+      gender, 
       role, 
       department, 
       stage, 
