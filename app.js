@@ -77,6 +77,30 @@ function setupEventListeners() {
     // Export button
     exportBtn.addEventListener("click", exportToCSV);
 
+    // Export to VCF (Contacts) Listener
+    const exportVcfBtn = document.getElementById("export-vcf-btn");
+    if (exportVcfBtn) {
+        exportVcfBtn.addEventListener("click", exportToVCF);
+    }
+
+    // Manual Refresh Listener
+    const refreshBtn = document.getElementById("refresh-data-btn");
+    if (refreshBtn) {
+        refreshBtn.addEventListener("click", () => {
+            refreshBtn.classList.add("spinning");
+            fetchData(currentPassword);
+        });
+    }
+
+    // Warning Modal Close Listener
+    const warningCloseBtn = document.getElementById("warning-close-btn");
+    const warningModal = document.getElementById("warning-modal");
+    if (warningCloseBtn && warningModal) {
+        warningCloseBtn.addEventListener("click", () => {
+            warningModal.classList.add("hidden");
+        });
+    }
+
     // Admin Login handlers
     if (adminLoginBtn) {
         adminLoginBtn.addEventListener("click", handleAdminLogin);
