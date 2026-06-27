@@ -328,7 +328,7 @@
         </footer>
     </div>
 
-    <!-- Modal Success Popup -->
+        <!-- Modal Success Popup -->
     <div class="modal hidden" id="success-modal">
         <div class="modal-content card">
             <i class="fa-solid fa-circle-check modal-check-icon"></i>
@@ -336,8 +336,18 @@
             <div id="registration-result-box" class="result-box">
                 <!-- Filled via JS -->
             </div>
-            <p class="modal-notice">عظم الله أجورنا وأجوركم بمصاب سيد الشهداء (عليه السلام)</p>
-            <button class="btn btn-close" id="modal-close-btn">حسناً</button>
+            <p class="modal-notice">يرجى أخذ لقطة شاشة لهذه البطاقة وإبرازها للجنة التنظيمية للموكب (عند الطلب)</p>
+            <button class="btn btn-close" id="modal-close-btn">إغلاق</button>
+        </div>
+    </div>
+
+    <!-- Modal Warning/Error Popup -->
+    <div class="modal hidden" id="warning-modal">
+        <div class="modal-content card" style="border: 1px solid rgba(255, 128, 128, 0.3); text-align: center;">
+            <i class="fa-solid fa-triangle-exclamation modal-check-icon" style="color: #ff8080; filter: drop-shadow(0 0 10px rgba(255, 128, 128, 0.4)); font-size: 3.5rem; margin-bottom: 15px; display: block;"></i>
+            <h2 id="warning-title" style="color: #ff8080; font-family: 'Amiri', serif; font-size: 1.8rem; margin-bottom: 10px;">تنبيه!</h2>
+            <p id="warning-message" style="color: var(--text-light); margin: 15px 0; font-size: 0.95rem; line-height: 1.6;"></p>
+            <button class="btn btn-close" id="warning-close-btn" style="background: rgba(255, 128, 128, 0.1); border-color: rgba(255, 128, 128, 0.3); color: #ff8080; margin-top: 10px; width: 100%; max-width: 150px; padding: 10px; border-radius: 6px; cursor: pointer;">حسناً</button>
         </div>
     </div>
 

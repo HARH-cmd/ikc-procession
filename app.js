@@ -353,10 +353,19 @@ function handleFormSubmit(e) {
     const phone = phoneInput.value.trim();
     const notes = document.getElementById("notes").value.trim();
     
-    // Iraqi phone pattern verification (Starts with 077, 078, 075 and has 11 digits)
+    // 1. Verify Full Name format (Must be triple or quadruple - at least 3 words)
+    const nameWords = name.split(/\s+/).filter(word => word.length > 0);
+    if (nameWords.length < 3) {
+        showWarningModal("خطأ في الاسم الكامل", "يرجى كتابة الاسم الكامل ثلاثياً أو رباعياً (3 أسماء على الأقل، مثال: أحمد علي محمد).");
+        const nameInput = document.getElementById("fullName");
+        if (nameInput) nameInput.focus();
+        return;
+    }
+
+    // 2. Verify Iraqi phone pattern (Starts with 077, 078, 075 and has 11 digits)
     const phonePattern = /^(077|078|075)[0-9]{8}$/;
     if (!phonePattern.test(phone)) {
-        alert("يرجى إدخال رقم هاتف عراقي صحيح يتكون من 11 رقماً ويبدأ بـ (077 أو 078 أو 075)");
+        showWarningModal("رقم الهاتف غير صحيح", "يرجى إدخال رقم هاتف عراقي صحيح يتكون من 11 رقماً ويبدأ بـ (077 أو 078 أو 075).");
         phoneInput.focus();
         return;
     }
