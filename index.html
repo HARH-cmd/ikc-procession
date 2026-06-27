@@ -240,7 +240,7 @@
                 <div class="card-header">
                     <i class="fa-solid fa-user-shield admin-icon"></i>
                     <h2>لوحة إدارة موكب الكلية</h2>
-                    <p>خاص باللجنة التنظيمية للموكب</p>
+                    <p>خاص باللجنة التنظيمية للموكب <span class="refresh-status" id="refresh-status">(تحديث تلقائي: نشط)</span></p>
                 </div>
                 
                 <div class="admin-actions">
@@ -250,6 +250,9 @@
                     </div>
                     <button class="btn btn-export" id="export-btn">
                         <i class="fa-solid fa-file-excel"></i> تصدير البيانات إلى Excel (CSV)
+                    </button>
+                    <button class="btn btn-refresh" id="refresh-data-btn" title="تحديث البيانات الآن">
+                        <i class="fa-solid fa-arrows-rotate"></i> تحديث لحظي
                     </button>
                 </div>
 
