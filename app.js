@@ -334,6 +334,7 @@ function handleFormSubmit(e) {
     e.preventDefault();
     
     const name = document.getElementById("fullName").value.trim();
+    const gender = document.getElementById("gender").value;
     const role = "طالب";
     const department = document.getElementById("department").value;
     const stage = document.getElementById("stage").value;
@@ -354,6 +355,7 @@ function handleFormSubmit(e) {
     
     const payload = {
         name,
+        gender,
         role: "طالب",
         department,
         stage,
@@ -420,6 +422,7 @@ function saveLocally(payload) {
         id: allRegistrations.length + 1,
         timestamp: new Date().toISOString(),
         name: payload.name,
+        gender: payload.gender,
         role: "طالب",
         department: payload.department,
         stage: payload.stage,
@@ -450,6 +453,7 @@ function setLoading(isLoading) {
 function showSuccessModal(data, isWaiting) {
     let resultHTML = `
         <p><strong>الاسم:</strong> ${data.name}</p>
+        <p><strong>الجنس:</strong> ${data.gender}</p>
         <p><strong>القسم:</strong> ${data.department}</p>
         <p><strong>المرحلة:</strong> ${data.stage}</p>
         <p><strong>سنة الميلاد:</strong> ${data.birthYear}</p>
@@ -546,6 +550,7 @@ function exportToCSV() {
         const row = [
             idx + 1,
             `"${r.name.replace(/"/g, '""')}"`,
+            `"${r.gender || "ذكر"}"`,
             `"${r.role}"`,
             `"${r.department}"`,
             `"${r.stage}"`,
@@ -577,12 +582,14 @@ function exportToCSV() {
 // قسم الإحصائيات التحليلية المطور
 // ==========================================================================
 function renderAnalytics() {
+    const genderContainer = document.getElementById("gender-stats-container");
     const deptContainer = document.getElementById("dept-stats-container");
     const stageContainer = document.getElementById("stage-stats-container");
     const ageContainer = document.getElementById("age-stats-container");
     
-    if (!deptContainer || !stageContainer || !ageContainer) return;
+    if (!genderContainer || !deptContainer || !stageContainer || !ageContainer) return;
     
+    genderContainer.innerHTML = "";
     deptContainer.innerHTML = "";
     stageContainer.innerHTML = "";
     ageContainer.innerHTML = "";
@@ -596,6 +603,14 @@ function renderAnalytics() {
         return;
     }
     
+    // 0. حساب وتوزيع الجنس
+    const genders = {};
+    allRegistrations.forEach(r => {
+        const g = r.gender || "ذكر";
+        genders[g] = (genders[g] || 0) + 1;
+    });
+    renderBarChart(genderContainer, genders, total);
+
     // 1. حساب وتوزيع الأقسام العلمية
     const depts = {};
     allRegistrations.forEach(r => {

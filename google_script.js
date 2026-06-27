@@ -43,6 +43,7 @@ function doPost(e) {
     }
     
     var name = params.name;
+    var gender = params.gender || "ذكر";
     var role = params.role;
     var department = params.department;
     var stage = params.stage || "—";
@@ -64,7 +65,7 @@ function doPost(e) {
       var cleanNewPhone = phone.toString().replace(/[^0-9]/g, "");
       if (data.length > 1) {
         for (var i = 1; i < data.length; i++) {
-          var rowPhone = data[i][6].toString().replace(/[^0-9]/g, ""); // العمود G (رقم الهاتف)
+          var rowPhone = data[i][7].toString().replace(/[^0-9]/g, ""); // العمود H (رقم الهاتف)
           if (rowPhone === cleanNewPhone) {
             lock.releaseLock();
             return ContentService.createTextOutput(JSON.stringify({
@@ -133,8 +134,8 @@ function doGet(e) {
     var activeStudentCount = 0;
     if (data.length > 1) {
       for (var i = 1; i < data.length; i++) {
-        var rowRole = data[i][2]; // العمود C (الصفة)
-        var rowWaiting = data[i][8]; // العمود I (الاحتياط)
+        var rowRole = data[i][3]; // العمود D (الصفة)
+        var rowWaiting = data[i][9]; // العمود J (الاحتياط)
         if (rowRole === "طالب" && (rowWaiting === "لا" || !rowWaiting)) {
           activeStudentCount++;
         }
@@ -164,13 +165,14 @@ function doGet(e) {
           id: i,
           timestamp: data[i][0],
           name: data[i][1],
-          role: data[i][2],
-          department: data[i][3],
-          stage: data[i][4],
-          birthYear: data[i][5],
-          phone: data[i][6],
-          notes: data[i][7],
-          waitingList: data[i][8]
+          gender: data[i][2] || "ذكر",
+          role: data[i][3],
+          department: data[i][4],
+          stage: data[i][5],
+          birthYear: data[i][6],
+          phone: data[i][7],
+          notes: data[i][8],
+          waitingList: data[i][9]
         });
       }
     }
