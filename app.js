@@ -120,6 +120,48 @@ function setupEventListeners() {
             toggleAdminPassword.classList.toggle("fa-eye-slash");
         });
     }
+
+    // --- Live Name Validation ---
+    const nameInput = document.getElementById("fullName");
+    const nameMsg = document.getElementById("name-validation-msg");
+    if (nameInput && nameMsg) {
+        nameInput.addEventListener("input", () => {
+            const nameVal = nameInput.value.trim();
+            if (nameVal === "") {
+                nameMsg.innerHTML = "";
+                return;
+            }
+            const words = nameVal.split(/\s+/).filter(w => w.length > 0);
+            if (words.length < 3) {
+                nameMsg.className = "validation-msg error";
+                nameMsg.innerHTML = '<i class="fa-solid fa-xmark"></i> يرجى كتابة الاسم الكامل ثلاثياً أو رباعياً';
+            } else {
+                nameMsg.className = "validation-msg success";
+                nameMsg.innerHTML = '<i class="fa-solid fa-check"></i> الاسم مستوفٍ للشروط';
+            }
+        });
+    }
+
+    // --- Live Phone Validation ---
+    const phoneInputEl = document.getElementById("phone");
+    const phoneMsg = document.getElementById("phone-validation-msg");
+    if (phoneInputEl && phoneMsg) {
+        phoneInputEl.addEventListener("input", () => {
+            const phoneVal = phoneInputEl.value.trim();
+            if (phoneVal === "") {
+                phoneMsg.innerHTML = "";
+                return;
+            }
+            const phonePattern = /^(077|078|075)[0-9]{8}$/;
+            if (!phonePattern.test(phoneVal)) {
+                phoneMsg.className = "validation-msg error";
+                phoneMsg.innerHTML = '<i class="fa-solid fa-xmark"></i> يجب أن يبدأ بـ 077/078/075 ويتكون من 11 رقماً';
+            } else {
+                phoneMsg.className = "validation-msg success";
+                phoneMsg.innerHTML = '<i class="fa-solid fa-check"></i> رقم الهاتف صحيح';
+            }
+        });
+    }
 }
 
 // Check if URL has #admin to show/hide Admin Panel

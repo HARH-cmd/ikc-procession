@@ -879,3 +879,29 @@ textarea {
     border-color: #80aaff;
     box-shadow: 0 0 15px rgba(128, 170, 255, 0.4);
 }
+
+/* Live Validation Styles */
+.validation-msg {
+    font-size: 0.8rem;
+    margin-top: 6px;
+    min-height: 18px;
+    transition: all 0.2s ease;
+    text-align: right;
+}
+
+.validation-msg.error {
+    color: #ff8080;
+}
+
+.validation-msg.success {
+    color: #80ffaa;
+}
+
+.btn-submit:disabled {
+    background: #2a2a2a !important;
+    border-color: #3a3a3a !important;
+    color: #666666 !important;
+    cursor: not-allowed !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
