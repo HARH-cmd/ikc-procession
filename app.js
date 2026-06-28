@@ -826,3 +826,50 @@ function exportToVCF() {
     link.click();
     document.body.removeChild(link);
 }
+
+// Show custom warning modal (with dynamic fallback for cached HTML)
+function showWarningModal(title, message) {
+    let warningModal = document.getElementById("warning-modal");
+    let warningTitle = document.getElementById("warning-title");
+    let warningMessage = document.getElementById("warning-message");
+    
+    if (!warningModal) {
+        // Create modal dynamically if missing from HTML due to browser cache
+        warningModal = document.createElement("div");
+        warningModal.id = "warning-modal";
+        warningModal.className = "modal";
+        warningModal.innerHTML = `
+            <div class="modal-content card" style="border: 1px solid rgba(255, 128, 128, 0.3); text-align: center; background: #1a1a1a; padding: 25px; border-radius: 12px; max-width: 400px; width: 90%; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 1200; position: relative;">
+                <i class="fa-solid fa-triangle-exclamation modal-check-icon" style="color: #ff8080; filter: drop-shadow(0 0 10px rgba(255, 128, 128, 0.4)); font-size: 3.5rem; margin-bottom: 15px; display: block;"></i>
+                <h2 id="warning-title" style="color: #ff8080; font-family: 'Amiri', serif; font-size: 1.8rem; margin-bottom: 10px;">${title}</h2>
+                <p id="warning-message" style="color: #e0e0e0; margin: 15px 0; font-size: 0.95rem; line-height: 1.6;">${message}</p>
+                <button class="btn btn-close" id="warning-close-btn" style="background: rgba(255, 128, 128, 0.1); border-color: rgba(255, 128, 128, 0.3); color: #ff8080; margin-top: 10px; width: 100%; max-width: 150px; padding: 10px; border-radius: 6px; cursor: pointer; border: 1px solid;">حسناً</button>
+            </div>
+        `;
+        // Inject styles for overlay
+        warningModal.style.position = "fixed";
+        warningModal.style.top = "0";
+        warningModal.style.left = "0";
+        warningModal.style.width = "100%";
+        warningModal.style.height = "100%";
+        warningModal.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+        warningModal.style.display = "flex";
+        warningModal.style.justifyContent = "center";
+        warningModal.style.alignItems = "center";
+        warningModal.style.zIndex = "1200";
+        
+        document.body.appendChild(warningModal);
+        
+        const closeBtn = warningModal.querySelector("#warning-close-btn");
+        if (closeBtn) {
+            closeBtn.addEventListener("click", () => {
+                warningModal.style.display = "none";
+            });
+        }
+    } else {
+        if (warningTitle) warningTitle.innerText = title;
+        if (warningMessage) warningMessage.innerText = message;
+        warningModal.classList.remove("hidden");
+        warningModal.style.display = "flex"; // Ensure it is shown
+    }
+}
