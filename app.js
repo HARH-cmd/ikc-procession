@@ -123,30 +123,59 @@ function setupEventListeners() {
 
     // --- Live Name Validation ---
     const nameInput = document.getElementById("fullName");
-    const nameMsg = document.getElementById("name-validation-msg");
-    if (nameInput && nameMsg) {
-        nameInput.addEventListener("input", () => {
+    let nameMsg = document.getElementById("name-validation-msg");
+    if (nameInput) {
+        if (!nameMsg) {
+            // Create dynamically if missing due to HTML cache
+            nameMsg = document.createElement("div");
+            nameMsg.id = "name-validation-msg";
+            nameMsg.className = "validation-msg";
+            const wrapper = nameInput.closest(".input-wrapper") || nameInput;
+            wrapper.parentNode.insertBefore(nameMsg, wrapper.nextSibling);
+        }
+        
+        const validateName = () => {
             const nameVal = nameInput.value.trim();
             if (nameVal === "") {
                 nameMsg.innerHTML = "";
                 return;
             }
             const words = nameVal.split(/\s+/).filter(w => w.length > 0);
-            if (words.length < 3) {
+            if (words.length < 4) {
                 nameMsg.className = "validation-msg error";
-                nameMsg.innerHTML = '<i class="fa-solid fa-xmark"></i> يرجى كتابة الاسم الكامل ثلاثياً أو رباعياً';
+                nameMsg.innerHTML = '<i class="fa-solid fa-xmark"></i> يرجى كتابة الاسم الثلاثي واللقب (مثال: أحمد علي محمد الجبوري)';
+                nameMsg.style.color = "#ff8080";
+                nameMsg.style.fontSize = "0.8rem";
+                nameMsg.style.marginTop = "6px";
+                nameMsg.style.display = "block";
             } else {
                 nameMsg.className = "validation-msg success";
-                nameMsg.innerHTML = '<i class="fa-solid fa-check"></i> الاسم مستوفٍ للشروط';
+                nameMsg.innerHTML = '<i class="fa-solid fa-check"></i> الاسم مستوفٍ للشروط (ثلاثي مع اللقب)';
+                nameMsg.style.color = "#80ffaa";
+                nameMsg.style.fontSize = "0.8rem";
+                nameMsg.style.marginTop = "6px";
+                nameMsg.style.display = "block";
             }
-        });
+        };
+        
+        nameInput.addEventListener("input", validateName);
+        nameInput.addEventListener("blur", validateName);
     }
 
     // --- Live Phone Validation ---
     const phoneInputEl = document.getElementById("phone");
-    const phoneMsg = document.getElementById("phone-validation-msg");
-    if (phoneInputEl && phoneMsg) {
-        phoneInputEl.addEventListener("input", () => {
+    let phoneMsg = document.getElementById("phone-validation-msg");
+    if (phoneInputEl) {
+        if (!phoneMsg) {
+            // Create dynamically if missing due to HTML cache
+            phoneMsg = document.createElement("div");
+            phoneMsg.id = "phone-validation-msg";
+            phoneMsg.className = "validation-msg";
+            const wrapper = phoneInputEl.closest(".input-wrapper") || phoneInputEl;
+            wrapper.parentNode.insertBefore(phoneMsg, wrapper.nextSibling);
+        }
+        
+        const validatePhone = () => {
             const phoneVal = phoneInputEl.value.trim();
             if (phoneVal === "") {
                 phoneMsg.innerHTML = "";
@@ -156,11 +185,22 @@ function setupEventListeners() {
             if (!phonePattern.test(phoneVal)) {
                 phoneMsg.className = "validation-msg error";
                 phoneMsg.innerHTML = '<i class="fa-solid fa-xmark"></i> يجب أن يبدأ بـ 077/078/075 ويتكون من 11 رقماً';
+                phoneMsg.style.color = "#ff8080";
+                phoneMsg.style.fontSize = "0.8rem";
+                phoneMsg.style.marginTop = "6px";
+                phoneMsg.style.display = "block";
             } else {
                 phoneMsg.className = "validation-msg success";
                 phoneMsg.innerHTML = '<i class="fa-solid fa-check"></i> رقم الهاتف صحيح';
+                phoneMsg.style.color = "#80ffaa";
+                phoneMsg.style.fontSize = "0.8rem";
+                phoneMsg.style.marginTop = "6px";
+                phoneMsg.style.display = "block";
             }
-        });
+        };
+        
+        phoneInputEl.addEventListener("input", validatePhone);
+        phoneInputEl.addEventListener("blur", validatePhone);
     }
 }
 
@@ -428,10 +468,10 @@ function handleFormSubmit(e) {
     const phone = phoneInput.value.trim();
     const notes = document.getElementById("notes").value.trim();
     
-    // 1. Verify Full Name format (Must be triple or quadruple - at least 3 words)
+    // 1. Verify Full Name format (Must be triple + surname - at least 4 words)
     const nameWords = name.split(/\s+/).filter(word => word.length > 0);
-    if (nameWords.length < 3) {
-        showWarningModal("خطأ في الاسم الكامل", "يرجى كتابة الاسم الكامل ثلاثياً أو رباعياً (3 أسماء على الأقل، مثال: أحمد علي محمد).");
+    if (nameWords.length < 4) {
+        showWarningModal("خطأ في الاسم", "يرجى كتابة الاسم الثلاثي واللقب (4 أسماء على الأقل، مثال: أحمد علي محمد الجبوري).");
         const nameInput = document.getElementById("fullName");
         if (nameInput) nameInput.focus();
         return;
