@@ -836,9 +836,9 @@ function exportToVCF() {
     
     // Filter only accepted male students in the basic list
     const accepted = allRegistrations.filter(r => 
-        r.role === "طالب" && 
-        r.gender === "ذكر" && 
-        (r.waitingList === "لا" || r.waitingList === false || !r.waitingList)
+        r.role === "طالب"// && 
+       // r.gender === "ذكر" && 
+       // (r.waitingList === "لا" || r.waitingList === false || !r.waitingList)
     );
     
     if (accepted.length === 0) {
